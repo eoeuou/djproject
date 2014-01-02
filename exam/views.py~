@@ -1,0 +1,31 @@
+# Create your views here.
+from django.template import loader,Context
+from django.http import Http404, HttpResponse
+from django.db import models
+from django.db.models.query import QuerySet
+
+from exam.models import QueType,Question
+from exam.json import getJson
+
+def get_types(request):
+    types = QueType.objects.all()
+    json = getJson(types)
+    html = 'types:<br>'
+    for typeid in types:
+       html += typeid.typeTitle+"<br>"
+    return HttpResponse(json)
+
+def get_qeustions(request):
+    page = request.GET.get('p')
+    if page==None:
+       page = 1
+    quetype = request.GET.get('type')
+    if quetype==None:
+       quetype = 1
+    print page
+    max_num = 2
+    questions = Question.objects.filter(queType_id=quetype)[number*(page-1):number*page]
+    return HttpResponse(getJson(questions))
+    
+
+
